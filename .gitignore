@@ -77,4 +77,4 @@ db.sqlite3-journal
 .dmypy.json
 dmypy.json
 
-# End of https://www.toptal.com/developers/gitignore/api/python,django,pycharm
+/media
