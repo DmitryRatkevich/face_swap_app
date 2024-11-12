@@ -5,7 +5,7 @@ import cv2
 
 # Загрузка моделей с использованием CPUExecutionProvider
 app = insightface.app.FaceAnalysis(providers=['CPUExecutionProvider'])
-app.prepare(ctx_id=0, det_size=(640, 640))
+app.prepare(ctx_id=0, det_size=(640, 640), det_thresh=0.8)
 
 # Укажите путь к вашей модели замены лиц ONNX
 model_path = 'models/inswapper_128.onnx'
@@ -18,8 +18,9 @@ def read_image(file):
 def preprocess_face(image, face_bbox):
     x1, y1, x2, y2 = [int(c) for c in face_bbox]
     face = image[y1:y2, x1:x2]
-    face = cv2.resize(face, (128, 128))
+    face = cv2.resize(face, (640, 640))
     face = face.astype(np.float32)
+    face = (face - 127.5) / 128.0
     face = np.expand_dims(face, axis=0)
     return face
 
@@ -35,6 +36,6 @@ def swap_faces(src_img, tgt_img):
     tgt_face = tgt_faces[0]
 
     # Замена лиц с помощью модели
-    swapped_face_img = swapper.get(tgt_img, src_face, tgt_face)
+    swapped_face_img = swapper.get(src_img, src_face, tgt_face)
 
     return swapped_face_img, None
